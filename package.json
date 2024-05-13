@@ -1,0 +1,16 @@
+{
+  "name": "employee-tracker-m12",
+  "version": "1.0.0",
+  "description": "command-line application thatbmanages a company's employee database, using Node.js, Inquirer, and MySQL.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Robert Gosselin",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "inquirer": "^9.2.21",
+    "mysql": "^2.18.1"
+  }
+}
