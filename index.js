@@ -19,15 +19,27 @@ function start(){
         }])
         .then(answer => {
             
-            switch (answer.action) {
+            switch (answer['Select One:']) {
                 case "View All Departments":
                     viewDepartments();
+                    break;
+                case "Add Department":
+                    addDepartment();
                     break;
                 case "View All Roles":
                     viewRoles();
                     break;
+                case "Add Role":
+                    addRole();
+                    break;
                 case "View All Employees":
                     viewEmployees();
+                    break;
+                case "Add Employee":
+                    addEmployee();
+                    break;
+                case "update Employee":
+                    updateEmployee();
                     break;
                 case "Exit":
                     console.log("Exiting application.");
@@ -40,53 +52,64 @@ function start(){
 // Function to view all departments
 // WHEN I choose to view all departments
 function viewDepartments() {
-    // THEN I am presented with a formatted table showing department names and department ids
     // logic to retrieve and display all departments from the database
-    // Example:
     mysql.query("SELECT * FROM departments", (err, rows) => {
         if (err) throw err;
+        // THEN I am presented with a formatted table showing department names and department ids
         console.table(rows);
-        // WHEN I choose to add a department
         
-        // THEN I am prompted to enter the name of the department and that department is added to the database
     });
 }
 
 // Function to view all roles
 // WHEN I choose to view all roles
 function viewRoles() {
-    // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
     // logic to retrieve and display all roles from the database
-    // Example:
     mysql.query("SELECT * FROM roles", (err, rows) => {
         if (err) throw err;
+        // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
         console.table(rows);
         
-        // WHEN I choose to add a role
-    
-        // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
     });
 }
 
 // Function to view all employees
 // WHEN I choose to view all employees
 function viewEmployees() {
-    // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
     // logic to retrieve and display all employees from the database
-    // Example:
     mysql.query("SELECT * FROM employees", (err, rows) => {
         if (err) throw err;
+        // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
         console.table(rows);
         
-        // WHEN I choose to add an employee
 
-        // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-        
-        // WHEN I choose to update an employee role
-        
-        // THEN I am prompted to select an employee to update and their new role and this information is updated in the database
     });
 }
+
+// WHEN I choose to add a department
+function addDepartment() {
+    
+    // THEN I am prompted to enter the name of the department and that department is added to the database
+
+}      
+
+// WHEN I choose to add a role
+function addRole() {
+    // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
+
+}
+
+// WHEN I choose to add an employee
+function addEmployee() {
+    
+    // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
+}
+
+// WHEN I choose to update an employee role
+function updateEmployee() {
+
+    // THEN I am prompted to select an employee to update and their new role and this information is updated in the database
+} 
 
 // Start the application
 start();
