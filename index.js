@@ -53,40 +53,80 @@ import('inquirer').then(async (inquirerModule) => {
                 }
             });
     }
-        
+
     // Function to view all departments
     // WHEN I choose to view all departments
     function viewDepartments() {
+        const sql = `
+            SELECT
+                id,
+                name AS department
+            FROM
+                departments
+        
+        `
         // logic to retrieve and display all departments from the database
-        connection.query("SELECT * FROM departments", (err, rows) => {
+        connection.query(sql, (err, rows) => {
             if (err) throw err;
             // THEN I am presented with a formatted table showing department names and department ids
             console.table(rows);
-            
+            start();
         });
     }
 
     // Function to view all roles
     // WHEN I choose to view all roles
     function viewRoles() {
+        const sql = `
+            SELECT
+                roles.id,
+                roles.title,
+                roles.salary,
+                roles.department_id,
+                departments.name AS department_id
+            FROM
+                roles
+
+            INNER JOIN
+                departments ON roles.department_id = departments.name
+        `
         // logic to retrieve and display all roles from the database
-        connection.query("SELECT * FROM roles", (err, rows) => {
+        connection.query(sql, (err, rows) => {
             if (err) throw err;
             // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
             console.table(rows);
-            
+            start();
         });
     }
 
     // Function to view all employees
     // WHEN I choose to view all employees
     function viewEmployees() {
+        const sql = `
+            SELECT
+                employees.id,
+                employees.first_name,
+                employees.last_name,
+                roles.title AS roles,
+                departments.name AS department,
+                roles.salary AS salary,
+                CONCAT(manager.first_name, ' ', manager.last_name) AS manager
+            FROM 
+                employees
+                
+            INNER JOIN
+                roles ON employees.role_id = roles.id
+            INNER JOIN
+                departments ON roles.department_id = departments.id
+            LEFT JOIN
+                employees AS manager ON employees.manager_id = manager.id
+        `
         // logic to retrieve and display all employees from the database
-        connection.query("SELECT * FROM employees", (err, rows) => {
+        connection.query(sql, (err, rows) => {
             if (err) throw err;
             // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
             console.table(rows);
-            
+            start();
 
         });
     }
@@ -109,7 +149,7 @@ import('inquirer').then(async (inquirerModule) => {
                     start(); // Go back to the main menu
             });
         });
-    }      
+    }
 
     // WHEN I choose to add a role
     function addRole() {
@@ -127,7 +167,7 @@ import('inquirer').then(async (inquirerModule) => {
     function updateEmployee() {
 
         // THEN I am prompted to select an employee to update and their new role and this information is updated in the database
-    } 
+    }
 
     // Start the application
     start();
