@@ -2,7 +2,7 @@
 import('inquirer').then(async (inquirerModule) => {
     const inquirer = inquirerModule.default;
 
-    const mysql = require('./config/connection');
+    const connection = require('./config/connection');
 
     // WHEN I start the application
     function start(){
@@ -12,9 +12,13 @@ import('inquirer').then(async (inquirerModule) => {
                 name: "Select One:",
                 type: "list",
                 choices: [
-                    "View All Departments", 
-                    "View All Roles", 
+                    "View All Departments",
+                    "Add Department",
+                    "View All Roles",
+                    "Add Role",
                     "View All Employees",
+                    "Add Employee",
+                    "Update Employee",
                     "Exit"
                 ]
             }])
@@ -39,7 +43,7 @@ import('inquirer').then(async (inquirerModule) => {
                     case "Add Employee":
                         addEmployee();
                         break;
-                    case "update Employee":
+                    case "Update Employee":
                         updateEmployee();
                         break;
                     case "Exit":
@@ -54,7 +58,7 @@ import('inquirer').then(async (inquirerModule) => {
     // WHEN I choose to view all departments
     function viewDepartments() {
         // logic to retrieve and display all departments from the database
-        mysql.query("SELECT * FROM departments", (err, rows) => {
+        connection.query("SELECT * FROM departments", (err, rows) => {
             if (err) throw err;
             // THEN I am presented with a formatted table showing department names and department ids
             console.table(rows);
@@ -66,7 +70,7 @@ import('inquirer').then(async (inquirerModule) => {
     // WHEN I choose to view all roles
     function viewRoles() {
         // logic to retrieve and display all roles from the database
-        mysql.query("SELECT * FROM roles", (err, rows) => {
+        connection.query("SELECT * FROM roles", (err, rows) => {
             if (err) throw err;
             // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
             console.table(rows);
@@ -78,7 +82,7 @@ import('inquirer').then(async (inquirerModule) => {
     // WHEN I choose to view all employees
     function viewEmployees() {
         // logic to retrieve and display all employees from the database
-        mysql.query("SELECT * FROM employees", (err, rows) => {
+        connection.query("SELECT * FROM employees", (err, rows) => {
             if (err) throw err;
             // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
             console.table(rows);
@@ -91,7 +95,20 @@ import('inquirer').then(async (inquirerModule) => {
     function addDepartment() {
         
         // THEN I am prompted to enter the name of the department and that department is added to the database
-
+        inquirer
+            .prompt({
+                name: "name",
+                type: "input",
+                message: "Enter the name of the department:"
+            })
+            .then(answer => {
+                const departmentName = answer.name;
+                connection.query("INSERT INTO departments (name) VALUES (?)", [departmentName], (err, result) => {
+                    if (err) throw err;
+                    console.log("Department added successfully!");
+                    start(); // Go back to the main menu
+            });
+        });
     }      
 
     // WHEN I choose to add a role
