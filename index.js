@@ -205,11 +205,11 @@ import('inquirer').then(async (inquirerModule) => {
     }
     
     function addEmployee() {
-        // Fetch all roles from the database
+        // Query roles table to fetch all roles
         connection.query("SELECT * FROM roles", (err, roleRows) => {
             if (err) throw err;
     
-            // Extract role titles for choices
+            // Extract role titles to use as choices in the inquirer prompt
             const roleChoices = roleRows.map(role => role.title);
     
             // Prompt user for employee's first name
@@ -219,8 +219,8 @@ import('inquirer').then(async (inquirerModule) => {
                     type: "input",
                     message: "What is the employee's first name?"
                 })
-                .then(answerFirst => {
-                    const firstName = answerFirst.first;
+                .then(answer => {
+                    const first = answer.first;
     
                     // Prompt user for employee's last name
                     inquirer
@@ -229,8 +229,8 @@ import('inquirer').then(async (inquirerModule) => {
                             type: "input",
                             message: "What is the employee's last name?"
                         })
-                        .then(answerLast => {
-                            const lastName = answerLast.last;
+                        .then(answer => {
+                            const last = answer.last;
     
                             // Prompt user to select the employee's role
                             inquirer
@@ -240,15 +240,15 @@ import('inquirer').then(async (inquirerModule) => {
                                     message: "What is the employee's role?",
                                     choices: roleChoices
                                 })
-                                .then(answerRole => {
-                                    const selectedRole = answerRole.role;
+                                .then(answer => {
+                                    const selectedRole = roleRows.find(role => role.title === answer.role);
     
-                                    // Fetch distinct managers from the database
-                                    connection.query("SELECT DISTINCT id, CONCAT(first_name, ' ', last_name) AS manager FROM employees", (err, managerRows) => {
+                                    // Query employees table to fetch distinct manager names and their corresponding IDs
+                                    connection.query("SELECT DISTINCT id, CONCAT(first_name, ' ', last_name) AS manager_name FROM employees WHERE manager_id IS NULL", (err, managerRows) => {
                                         if (err) throw err;
     
-                                        // Extract manager names and IDs for choices
-                                        const managerChoices = managerRows.map(manager => ({ name: manager.manager, value: manager.id }));
+                                        // Extract manager names to use as choices in the manager selection prompt
+                                        const managerChoices = managerRows.map(manager => manager.manager_name);
     
                                         // Prompt user to select the employee's manager
                                         inquirer
@@ -258,11 +258,11 @@ import('inquirer').then(async (inquirerModule) => {
                                                 message: "Who is the employee's manager?",
                                                 choices: managerChoices
                                             })
-                                            .then(answerManager => {
-                                                const selectedManager = answerManager.manager;
+                                            .then(answer => {
+                                                const selectedManager = managerRows.find(manager => manager.manager_name === answer.manager);
     
-                                                // Insert the new employee into the database
-                                                connection.query("INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)", [firstName, lastName, selectedRole, selectedManager], (err, result) => {
+                                                // Insert the new employee into the database with the retrieved role ID and selected manager ID
+                                                connection.query("INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)", [first, last, selectedRole.id, selectedManager.id], (err, result) => {
                                                     if (err) throw err;
                                                     console.log("Employee added successfully!");
                                                     start(); // Go back to the main menu
@@ -274,6 +274,7 @@ import('inquirer').then(async (inquirerModule) => {
                 });
         });
     }
+    
     
 
     // WHEN I choose to update an employee role
