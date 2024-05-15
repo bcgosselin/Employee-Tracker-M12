@@ -17,7 +17,7 @@ import('inquirer').then(async (inquirerModule) => {
         
         console.log(asciiArt);
         
-        // run applpication
+        // run application
         start();
     };
     
