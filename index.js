@@ -4,8 +4,27 @@ import('inquirer').then(async (inquirerModule) => {
 
     const connection = require('./config/connection');
 
+    // graphic to display when booting application
+    function Art() {
+        const asciiArt = `
+        ___________              .__                               ___________                     __                 
+        \\_   _____/ _____ ______ |  |   ____ ___.__. ____   ____   \\__    ___/___________    ____ |  | __ ___________ 
+        |    __)_ /     \\____ \\|  |  /  _ <   |  |/ __ \\_/ __ \\    |    |  \\_  __ \\__  \\ _/ ___\\|  |/ // __ \\_  __ \\
+        |        \\  Y Y  \\  |_> >  |_(  <_> )___  \\  ___/\\  ___/    |    |   |  | \\// __ \\\\  \\___|    <\\  ___/|  | \\/
+        /_______  /__|_|  /   __/|____/\\____// ____|\\___  >\\___  >   |____|   |__|  (____  /\\___  >__|_ \\\\___  >__|   
+                \\/      \\/|__|               \\/         \\/     \\/                        \\/     \\/     \\/    \\/       
+        `;
+        
+        console.log(asciiArt);
+        
+        // run applpication
+        start();
+    };
+    
     // Start application function
+    
     function start(){
+
         inquirer
             // Prompt to select initial operation
             .prompt([{
@@ -48,7 +67,7 @@ import('inquirer').then(async (inquirerModule) => {
                             break;
                         case "Exit":
                             console.log("Exiting application.");
-                            mysql.end();
+                            connection.end();
                             break;
                     }
                 });
@@ -346,7 +365,7 @@ import('inquirer').then(async (inquirerModule) => {
     }
     
 
-    // Start the application
-    start();
+    // Run graphic
+    Art();
 
 });

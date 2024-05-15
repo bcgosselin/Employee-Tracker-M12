@@ -9,8 +9,3 @@ INSERT INTO employees (id, first_name, last_name, role_id, department_id, salary
 (6, 'Malia', 'Brown', 6, 3, 6, 5),
 (7, 'Sarah', 'Lourd', 7, 4, 7, NULL),
 (8, 'Tom', 'Allen', 8, 4, 8, 7);
-
--- UPDATE salaries based on roles
-UPDATE employees
-JOIN roles ON employees.role_id = roles.id
-SET employees.salary = roles.salary;
