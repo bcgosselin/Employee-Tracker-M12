@@ -1,62 +1,62 @@
-// GIVEN a command-line application that accepts user input
+// Import and connection
 import('inquirer').then(async (inquirerModule) => {
     const inquirer = inquirerModule.default;
 
     const connection = require('./config/connection');
 
-    // WHEN I start the application
+    // Start application function
     function start(){
         inquirer
-        // THEN I am presented with the following options: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
-        .prompt([{
-                name: "Select One:",
-                type: "list",
-                choices: [
-                    "View All Departments",
-                    "Add Department",
-                    "View All Roles",
-                    "Add Role",
-                    "View All Employees",
-                    "Add Employee",
-                    "Update Employee",
-                    "Exit"
-                ]
-            }])
-            .then(answer => {
-                
-                switch (answer['Select One:']) {
-                    case "View All Departments":
-                        viewDepartments();
-                        break;
-                    case "Add Department":
-                        addDepartment();
-                        break;
-                    case "View All Roles":
-                        viewRoles();
-                        break;
-                    case "Add Role":
-                        addRole();
-                        break;
-                    case "View All Employees":
-                        viewEmployees();
-                        break;
-                    case "Add Employee":
-                        addEmployee();
-                        break;
-                    case "Update Employee":
-                        updateEmployee();
-                        break;
-                    case "Exit":
-                        console.log("Exiting application.");
-                        mysql.end();
-                        break;
-                }
-            });
+            // Prompt to select initial operation
+            .prompt([{
+                    name: "Select One:",
+                    type: "list",
+                    choices: [
+                        "View All Departments",
+                        "Add Department",
+                        "View All Roles",
+                        "Add Role",
+                        "View All Employees",
+                        "Add Employee",
+                        "Update Employee",
+                        "Exit"
+                    ]
+                }])
+                .then(answer => {
+                    // Switch case to run function aligning with user selected operation
+                    switch (answer['Select One:']) {
+                        case "View All Departments":
+                            viewDepartments();
+                            break;
+                        case "Add Department":
+                            addDepartment();
+                            break;
+                        case "View All Roles":
+                            viewRoles();
+                            break;
+                        case "Add Role":
+                            addRole();
+                            break;
+                        case "View All Employees":
+                            viewEmployees();
+                            break;
+                        case "Add Employee":
+                            addEmployee();
+                            break;
+                        case "Update Employee":
+                            updateEmployee();
+                            break;
+                        case "Exit":
+                            console.log("Exiting application.");
+                            mysql.end();
+                            break;
+                    }
+                });
     }
 
     // Function to view all departments
-    // WHEN I choose to view all departments
     function viewDepartments() {
+        // Sql query
         const sql = `
             SELECT
                 id,
@@ -65,18 +65,18 @@ import('inquirer').then(async (inquirerModule) => {
                 departments
         
         `
-        // logic to retrieve and display all departments from the database
+        // Logic to retrieve and display all departments from the database
         connection.query(sql, (err, rows) => {
             if (err) throw err;
-            // THEN I am presented with a formatted table showing department names and department ids
+            // Formatted table showing department names and department ids
             console.table(rows);
             start();
         });
     }
 
     // Function to view all roles
-    // WHEN I choose to view all roles
     function viewRoles() {
+        // Sql query
         const sql = `
             SELECT
                 roles.id,
@@ -90,18 +90,18 @@ import('inquirer').then(async (inquirerModule) => {
             INNER JOIN
                 departments ON roles.department_id = departments.id
         `
-        // logic to retrieve and display all roles from the database
+        // Query to retrieve and display all roles from the database
         connection.query(sql, (err, rows) => {
             if (err) throw err;
-            // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
+            // Formatted table with the job title, role id, the department that role belongs to, and the salary for that role
             console.table(rows);
             start();
         });
     }
 
     // Function to view all employees
-    // WHEN I choose to view all employees
     function viewEmployees() {
+        // Sql query
         const sql = `
             SELECT
                 employees.id,
@@ -121,41 +121,45 @@ import('inquirer').then(async (inquirerModule) => {
             LEFT JOIN
                 employees AS manager ON employees.manager_id = manager.id
         `
-        // logic to retrieve and display all employees from the database
+        // Query to retrieve and display all employees from the database
         connection.query(sql, (err, rows) => {
             if (err) throw err;
-            // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
+            // Table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
             console.table(rows);
             start();
 
         });
     }
 
-    // WHEN I choose to add a department
+    // Function to choose to add a department
     function addDepartment() {
         
-        // THEN I am prompted to enter the name of the department and that department is added to the database
+        // Prompt to enter the name of the department
         inquirer
             .prompt({
                 name: "name",
                 type: "input",
                 message: "What is the name of the department?"
             })
+            // Department is added to the database
             .then(answer => {
                 const departmentName = answer.name;
                 connection.query("INSERT INTO departments (name) VALUES (?)", [departmentName], (err, result) => {
                     if (err) throw err;
                     console.log("Department added successfully!");
-                    start(); // Go back to the main menu
+                    // Go back to the main menu
+                    start();
                 });
             });
     }
-
+    
+    // function to add role
     function addRole() {
-        // Get the list of existing departments
+        // Query the list of existing departments
         connection.query("SELECT * FROM departments", (err, rows) => {
             if (err) throw err;
             
+            // get departments names and push into const
             const departmentChoices = rows.map(department => department.name);
     
             // Prompt to select the department for the role
@@ -177,6 +181,7 @@ import('inquirer').then(async (inquirerModule) => {
                             message: "What is the name of the role?"
                         })
                         .then(answer => {
+                            // Push answer into const
                             const roleName = answer.name;
     
                             // Prompt to enter the salary for the role
@@ -187,16 +192,18 @@ import('inquirer').then(async (inquirerModule) => {
                                     message: "What is the salary of the role?"
                                 })
                                 .then(answer => {
+                                    // Push answer into const
                                     const salary = answer.salary;
     
                                     // Find the ID of the selected department
                                     const departmentId = rows.find(department => department.name === departmentName).id;
     
-                                    // Insert the role into the database
+                                    // Query to push the role into the database
                                     connection.query("INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)", [roleName, salary, departmentId], (err, result) => {
                                         if (err) throw err;
                                         console.log("Role added successfully!");
-                                        start(); // Go back to the main menu
+                                        // Go back to the main menu
+                                        start();
                                     });
                                 });
                         });
@@ -205,11 +212,11 @@ import('inquirer').then(async (inquirerModule) => {
     }
     
     function addEmployee() {
-        // Query roles table to fetch all roles
+        // Query all roles
         connection.query("SELECT * FROM roles", (err, roleRows) => {
             if (err) throw err;
     
-            // Extract role titles to use as choices in the inquirer prompt
+            // Get role title and push into const
             const roleChoices = roleRows.map(role => role.title);
     
             // Prompt user for employee's first name
@@ -219,6 +226,7 @@ import('inquirer').then(async (inquirerModule) => {
                     type: "input",
                     message: "What is the employee's first name?"
                 })
+                // Push answer into const
                 .then(answer => {
                     const first = answer.first;
     
@@ -229,6 +237,7 @@ import('inquirer').then(async (inquirerModule) => {
                             type: "input",
                             message: "What is the employee's last name?"
                         })
+                        // Push answer into const
                         .then(answer => {
                             const last = answer.last;
     
@@ -240,17 +249,18 @@ import('inquirer').then(async (inquirerModule) => {
                                     message: "What is the employee's role?",
                                     choices: roleChoices
                                 })
+                                // Push answer into const
                                 .then(answer => {
                                     const selectedRole = roleRows.find(role => role.title === answer.role);
     
-                                    // Fetch the corresponding salary from roles table based on the selected role
+                                    // Push selected role salary into const
                                     const salary = selectedRole.salary;
     
-                                    // Query employees table to fetch distinct manager names and their corresponding IDs
+                                    // Query employees table to get distinct manager full names and their IDs
                                     connection.query("SELECT DISTINCT id, CONCAT(first_name, ' ', last_name) AS manager_name FROM employees WHERE manager_id IS NULL", (err, managerRows) => {
                                         if (err) throw err;
     
-                                        // Extract manager names to use as choices in the manager selection prompt
+                                        // Get manager names to use as choices
                                         const managerChoices = managerRows.map(manager => manager.manager_name);
     
                                         // Prompt user to select the employee's manager
@@ -261,14 +271,16 @@ import('inquirer').then(async (inquirerModule) => {
                                                 message: "Who is the employee's manager?",
                                                 choices: managerChoices
                                             })
+                                            // Push answer into const
                                             .then(answer => {
                                                 const selectedManager = managerRows.find(manager => manager.manager_name === answer.manager);
     
-                                                // Insert the new employee into the database with the retrieved role ID, selected manager ID, and salary
+                                                // Push the new employee into the database with the  role ID, selected manager ID, and salary
                                                 connection.query("INSERT INTO employees (first_name, last_name, role_id, manager_id, salary) VALUES (?, ?, ?, ?, ?)", [first, last, selectedRole.id, selectedManager.id, salary], (err, result) => {
                                                     if (err) throw err;
                                                     console.log("Employee added successfully!");
-                                                    start(); // Go back to the main menu
+                                                    // Go back to the main menu
+                                                    start();
                                                 });
                                             });
                                     });
@@ -281,11 +293,58 @@ import('inquirer').then(async (inquirerModule) => {
     
     
 
-    // WHEN I choose to update an employee role
     function updateEmployee() {
-
-        // THEN I am prompted to select an employee to update and their new role and this information is updated in the database
+        // Query employees table to fetch all employees
+        connection.query("SELECT * FROM employees", (err, employeeRows) => {
+            if (err) throw err;
+    
+            // Push employees full name into const 
+            const employeeChoices = employeeRows.map(employee => `${employee.first_name} ${employee.last_name}`);
+    
+            // Prompt user to select the employee to update
+            inquirer
+                .prompt({
+                    name: "employee",
+                    type: "list",
+                    message: "Which employee's role do you want to update?",
+                    choices: employeeChoices
+                })
+                // Push answer into const
+                .then(answer => {
+                    const selectedEmployee = employeeRows.find(employee => `${employee.first_name} ${employee.last_name}` === answer.employee);
+    
+                    // Get all roles
+                    connection.query("SELECT * FROM roles", (err, roleRows) => {
+                        if (err) throw err;
+    
+                        // Extract role titles to use as choices in the role selection prompt
+                        const roleChoices = roleRows.map(role => role.title);
+    
+                        // Prompt user to select the new role for the employee
+                        inquirer
+                            .prompt({
+                                name: "role",
+                                type: "list",
+                                message: `What is ${selectedEmployee.first_name} ${selectedEmployee.last_name}'s new role?`,
+                                choices: roleChoices
+                            })
+                            // Push answer into const
+                            .then(answer => {
+                                const selectedRole = roleRows.find(role => role.title === answer.role);
+    
+                                // Update the employee's role in the database
+                                connection.query("UPDATE employees SET role_id = ? WHERE id = ?", [selectedRole.id, selectedEmployee.id], (err, result) => {
+                                    if (err) throw err;
+                                    console.log(`${selectedEmployee.first_name} ${selectedEmployee.last_name}'s role has been updated successfully!`);
+                                    // Go back to the main menu
+                                    start();
+                                });
+                            });
+                    });
+                });
+        });
     }
+    
 
     // Start the application
     start();
