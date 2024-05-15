@@ -17,11 +17,13 @@ This project is Robert Gosselin's twelfth bootcamp challenge. This project was c
 
 requires Node package: https://nodejs.org/en/download
 
-requires Sequelize package: https://www.npmjs.com/package/sequelize
-
 requires dotenv package: https://www.npmjs.com/package/dotenv
 
 requires mySql package: https://dev.mysql.com/doc/refman/8.0/en/windows-choosing-package.html
+
+requires Inquirer package: https://www.npmjs.com/package/inquirer
+
+requires babel package: https://babeljs.io/
 
 ## Usage
 please view attached video link for usage instructions:
