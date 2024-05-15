@@ -88,7 +88,7 @@ import('inquirer').then(async (inquirerModule) => {
                 roles
 
             INNER JOIN
-                departments ON roles.department_id = departments.name
+                departments ON roles.department_id = departments.id
         `
         // logic to retrieve and display all roles from the database
         connection.query(sql, (err, rows) => {
@@ -139,7 +139,7 @@ import('inquirer').then(async (inquirerModule) => {
             .prompt({
                 name: "name",
                 type: "input",
-                message: "Enter the name of the department:"
+                message: "What is the name of the department?"
             })
             .then(answer => {
                 const departmentName = answer.name;
@@ -147,20 +147,77 @@ import('inquirer').then(async (inquirerModule) => {
                     if (err) throw err;
                     console.log("Department added successfully!");
                     start(); // Go back to the main menu
+                });
             });
+    }
+
+    function addRole() {
+        // Get the list of existing departments
+        connection.query("SELECT * FROM departments", (err, rows) => {
+            if (err) throw err;
+            
+            const departmentChoices = rows.map(department => department.name);
+    
+            // Prompt to select the department for the role
+            inquirer
+                .prompt({
+                    name: "department",
+                    type: "list",
+                    message: "Which department does this role belong to?",
+                    choices: departmentChoices
+                })
+                .then(answer => {
+                    const departmentName = answer.department;
+    
+                    // Prompt to enter the name for the role
+                    inquirer
+                        .prompt({
+                            name: "name",
+                            type: "input",
+                            message: "What is the name of the role?"
+                        })
+                        .then(answer => {
+                            const roleName = answer.name;
+    
+                            // Prompt to enter the salary for the role
+                            inquirer
+                                .prompt({
+                                    name: "salary",
+                                    type: "input",
+                                    message: "What is the salary of the role?"
+                                })
+                                .then(answer => {
+                                    const salary = answer.salary;
+    
+                                    // Find the ID of the selected department
+                                    const departmentId = rows.find(department => department.name === departmentName).id;
+    
+                                    // Insert the role into the database
+                                    connection.query("INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)", [roleName, salary, departmentId], (err, result) => {
+                                        if (err) throw err;
+                                        console.log("Role added successfully!");
+                                        start(); // Go back to the main menu
+                                    });
+                                });
+                        });
+                });
         });
     }
-
-    // WHEN I choose to add a role
-    function addRole() {
-        // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
-
-    }
+    
+    
 
     // WHEN I choose to add an employee
     function addEmployee() {
         
-        // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
+        // THEN I am prompted to enter the employee’s first name
+
+        // THEN I am prompted to enter the employee’s last name
+
+        // THEN I am prompted to enter the employee’s role
+
+        // THEN I am prompted to enter the employee’s manager
+
+        // that employee is added to the database
     }
 
     // WHEN I choose to update an employee role
