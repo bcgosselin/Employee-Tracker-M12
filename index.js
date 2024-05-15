@@ -243,6 +243,9 @@ import('inquirer').then(async (inquirerModule) => {
                                 .then(answer => {
                                     const selectedRole = roleRows.find(role => role.title === answer.role);
     
+                                    // Fetch the corresponding salary from roles table based on the selected role
+                                    const salary = selectedRole.salary;
+    
                                     // Query employees table to fetch distinct manager names and their corresponding IDs
                                     connection.query("SELECT DISTINCT id, CONCAT(first_name, ' ', last_name) AS manager_name FROM employees WHERE manager_id IS NULL", (err, managerRows) => {
                                         if (err) throw err;
@@ -261,8 +264,8 @@ import('inquirer').then(async (inquirerModule) => {
                                             .then(answer => {
                                                 const selectedManager = managerRows.find(manager => manager.manager_name === answer.manager);
     
-                                                // Insert the new employee into the database with the retrieved role ID and selected manager ID
-                                                connection.query("INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)", [first, last, selectedRole.id, selectedManager.id], (err, result) => {
+                                                // Insert the new employee into the database with the retrieved role ID, selected manager ID, and salary
+                                                connection.query("INSERT INTO employees (first_name, last_name, role_id, manager_id, salary) VALUES (?, ?, ?, ?, ?)", [first, last, selectedRole.id, selectedManager.id, salary], (err, result) => {
                                                     if (err) throw err;
                                                     console.log("Employee added successfully!");
                                                     start(); // Go back to the main menu
@@ -274,6 +277,7 @@ import('inquirer').then(async (inquirerModule) => {
                 });
         });
     }
+    
     
     
 
