@@ -204,21 +204,77 @@ import('inquirer').then(async (inquirerModule) => {
         });
     }
     
-    
-
-    // WHEN I choose to add an employee
     function addEmployee() {
-        
-        // THEN I am prompted to enter the employee’s first name
-
-        // THEN I am prompted to enter the employee’s last name
-
-        // THEN I am prompted to enter the employee’s role
-
-        // THEN I am prompted to enter the employee’s manager
-
-        // that employee is added to the database
+        // Fetch all roles from the database
+        connection.query("SELECT * FROM roles", (err, roleRows) => {
+            if (err) throw err;
+    
+            // Extract role titles for choices
+            const roleChoices = roleRows.map(role => role.title);
+    
+            // Prompt user for employee's first name
+            inquirer
+                .prompt({
+                    name: "first",
+                    type: "input",
+                    message: "What is the employee's first name?"
+                })
+                .then(answerFirst => {
+                    const firstName = answerFirst.first;
+    
+                    // Prompt user for employee's last name
+                    inquirer
+                        .prompt({
+                            name: "last",
+                            type: "input",
+                            message: "What is the employee's last name?"
+                        })
+                        .then(answerLast => {
+                            const lastName = answerLast.last;
+    
+                            // Prompt user to select the employee's role
+                            inquirer
+                                .prompt({
+                                    name: "role",
+                                    type: "list",
+                                    message: "What is the employee's role?",
+                                    choices: roleChoices
+                                })
+                                .then(answerRole => {
+                                    const selectedRole = answerRole.role;
+    
+                                    // Fetch distinct managers from the database
+                                    connection.query("SELECT DISTINCT id, CONCAT(first_name, ' ', last_name) AS manager FROM employees", (err, managerRows) => {
+                                        if (err) throw err;
+    
+                                        // Extract manager names and IDs for choices
+                                        const managerChoices = managerRows.map(manager => ({ name: manager.manager, value: manager.id }));
+    
+                                        // Prompt user to select the employee's manager
+                                        inquirer
+                                            .prompt({
+                                                name: "manager",
+                                                type: "list",
+                                                message: "Who is the employee's manager?",
+                                                choices: managerChoices
+                                            })
+                                            .then(answerManager => {
+                                                const selectedManager = answerManager.manager;
+    
+                                                // Insert the new employee into the database
+                                                connection.query("INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)", [firstName, lastName, selectedRole, selectedManager], (err, result) => {
+                                                    if (err) throw err;
+                                                    console.log("Employee added successfully!");
+                                                    start(); // Go back to the main menu
+                                                });
+                                            });
+                                    });
+                                });
+                        });
+                });
+        });
     }
+    
 
     // WHEN I choose to update an employee role
     function updateEmployee() {
