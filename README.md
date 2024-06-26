@@ -1,7 +1,7 @@
 # Employee-Tracker-M12
 command-line application thatbmanages a company's employee database, using Node.js, Inquirer, and MySQL.
 
-https://github.com/bcgosselin/Employee-Tracker-M12
+https://github.com/bcgosselin/SQL-Employee-Tracker
 
 ## Description
 This project is Robert Gosselin's twelfth bootcamp challenge. This project was created to showcase his skills and aptitude using only text based instructions. This application was hand-written utilizing credited resources [Credits](#credits). The goal of this challenge was to develop and engineer a functioning backend database for tracking employee's salaries, titles, departments, and managers. Everything included was apart of an ongoing bootcamp to develop and hone Full Stack Web Development skills.
