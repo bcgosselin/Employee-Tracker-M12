@@ -1,7 +1,5 @@
 # SQL: Employee Tracker
 
-command-line application thatbmanages a company's employee database, using Node.js, Inquirer, and MySQL.
-
 Built a command-line application using Node.js and Inquirer to manage an employee database. Implemented CRUD operations for departments, roles, and employees. Created formatted tables for easy data viewing, demonstrated via a walkthrough video.
 
 ## Description
